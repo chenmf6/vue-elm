@@ -26,7 +26,9 @@ export default {
     'v-header': Header
   },
   created () {
-    this.$store.dispatch('loadSeller')
+    this.$store.dispatch('loadSeller').then(() =>{
+      this.$emit('loaded')
+    })
   }
 }
 </script>

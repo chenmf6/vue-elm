@@ -82,32 +82,45 @@
 import BScroll from 'better-scroll'
 import Star from './star/Star'
 import SupportIcon from './iconMap/SupportIcon'
-import axios from 'axios'
+import {mapGetters} from 'vuex'
 
 export default {
   data () {
     return {
-      seller: {},
       collectFlag: false
     }
   },
-  components: { Star, SupportIcon },
+  computed: mapGetters(['seller']),
   created () {
-    axios.get('static/data.json').then(res => {
-      this.seller = res.data.seller
-      this.$nextTick(() => {
-        this._initSellerScroll()
-        this._initPicsScroll()
-      })
+    this.$nextTick(() => {
+      console.log('created')
+      this._initSellerScroll()
+      this._initPicsScroll()
     })
   },
+  watch: {
+    seller: function () {
+      this.$nextTick(() => {
+        console.log('watch')
+        this.sellerScroll ? this.sellerScroll.refresh() : this._initSellerScroll()
+        this.picsScroll ? this.picsScroll.refresh() : this._initPicsScroll()
+      })
+    }
+  },
+  components: { Star, SupportIcon },
   methods: {
     _initSellerScroll () {
+      if (this.sellerScroll) {
+        return
+      }
       this.sellerScroll = new BScroll(this.$refs.sellerWrapper, {
         click: true
       })
     },
     _initPicsScroll () {
+      if (!this.seller.pics || this.picsScroll) {
+        return
+      }
       const PIC_WIDTH = 120
       const MARGIN = 6
       let picsLength = this.seller.pics.length

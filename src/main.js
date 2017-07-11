@@ -6,6 +6,7 @@ import App from './App'
 import router from './router'
 import VueTap from 'v-tap'
 import store from './store'
+import './filter/time'
 
 Vue.use(VueTap)
 
@@ -15,5 +16,10 @@ new Vue({
   router,
   store,
   template: '<App/>',
-  components: { App }
+  components: { App },
+  data () {
+    return {
+      eventHub: new Vue()
+    }
+  }
 })
