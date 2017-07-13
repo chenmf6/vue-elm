@@ -15,14 +15,6 @@
       <div class="content-right" :class="{'enough':cartTotal>=minPrice}" @click="checkout" :enabled="checkoutEnabled">{{payDesc}}</div>
     </div>
 
-    <div class="ball-container">
-      <transition name="drop" v-for="(ball,index) in balls">
-        <div class="ball" v-show="ball.show">
-          <div class="inner inner-hook"></div>
-        </div>
-      </transition>
-    </div>
-
     <transition name="transHeight">
       <div class="shopcart-list" v-show="listShow">
         <div class="list-header">
@@ -62,6 +54,7 @@ export default {
   data () {
     return {
       balls: [].fill({show: false}, 0, 5),
+      dropBalls: [],
       listShow: false
     }
   },
@@ -202,20 +195,6 @@ export default {
         &.enough
           background #00b43c
           color white
-    .ball-container
-      .ball
-        position fixed
-        left 32px
-        bottom 22px
-        z-index 200
-        &.drop-enter,&.drop-enter-active
-          transition all 0.4s cubic-bezier(0.49,-0.29,0.75,0.41)
-          .inner
-            width 16px
-            height 16px
-            border-radius 50%
-            background rgb(0,160,220)
-            transition all 0.4s linear
     .shopcart-list
       position absolute
       top 0
