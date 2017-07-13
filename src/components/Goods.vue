@@ -1,6 +1,6 @@
 <template>
 <div class="goods">
-  <div class="menuWrapper" ref="menuWrapper">
+  <div class="menu-wrapper" ref="menuWrapper">
     <ul>
       <li v-for="(item,index) in goods" @click="menuClick(index,$event)" :class="index===menuCurrentIndex? 'menu-item-selected':'menu-item'">
         <span class="text">
@@ -16,7 +16,7 @@
       <li v-for="item in goods" class="food-list food-list-hook">
         <h1>{{item.name}}</h1>
         <ul>
-          <li v-for="food in item.foods" class="food-item" @click="showFoodDetail(food)">
+          <li v-for="food in item.foods" class="food-item" @click="showFoodDetails(food)">
             <div class="icon">
               <img width="57" height="57" :src="food.icon">
             </div>
@@ -24,7 +24,7 @@
               <h2>{{food.name}}</h2>
               <p class="description" v-show="food.description">{{food.description}}</p>
               <div class="sell-info">
-                <span class="sellCount">月售{food.sellCount}}份</span>
+                <span class="sellCount">月售{{food.sellCount}}份</span>
                 <span class="rating">好评率</span>
               </div>
               <div class="price">
@@ -42,7 +42,8 @@
   </div>
 
   <shop-cart></shop-cart>
-  <food-detail v-if="selectedFood" :food="selectedFood" ref="foodDetail"></food-detail>
+
+  <food-details v-if="selectedFood" :food="selectedFood" ref="foodDetails"></food-details>
 </div>
 </template>
 
@@ -52,10 +53,10 @@ import {mapGetters} from 'vuex'
 import SupportIcon from './iconMap/SupportIcon'
 import ShopCart from './ShopCart'
 import CartControl from './CartControl'
-import FoodDetail from './FoodDetail'
+import FoodDetails from './FoodDetails'
 
 export default {
-  components: {SupportIcon, ShopCart, CartControl, FoodDetail},
+  components: {SupportIcon, ShopCart, CartControl, FoodDetails},
   data () {
     return {
       listHeight: [],
@@ -93,7 +94,7 @@ export default {
         click: true,
         probeType: 3
       })
-      this.foodsScroll.on('scroll', pos => {
+      this.foodsScroll.on('ratingsScroll', pos => {
         this.foodsScrollY = Math.abs(Math.round(pos.y))
       })
     },
@@ -101,7 +102,7 @@ export default {
       let foodList = this.$refs.foodsWrapper.querySelectorAll('.food-list-hook')
       let height = 0
       this.listHeight.push(height)
-      for (let i = 0; i < foodList.length; i ++) {
+      for (let i = 0; i < foodList.length; i++) {
         let item = foodList[i]
         height += item.clientHeight
         this.listHeight.push(height)
@@ -113,10 +114,10 @@ export default {
       }
       this.foodsScroll.scrollTo(0, -this.listHeight[index], 300)
     },
-    showFoodDetail (food) {
+    showFoodDetails (food) {
       this.selectedFood = food
       this.$nextTick(() => {
-        this.$refs.foodDetail.showToggle()
+        this.$refs.foodDetails.showToggle()
       })
     }
   }
@@ -124,7 +125,7 @@ export default {
 </script>
 
 <style lang="stylus">
-  @import '../../common/stylus/mixin'
+  @import '../assets/stylus/mixin'
   .goods
     display flex
     position absolute

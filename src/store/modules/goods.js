@@ -14,7 +14,7 @@ const getters = {
 
 const actions = {
   loadGoods ({commit}) {
-    axios.get('static/data.json').then((res) => {
+    return axios.get('static/data.json').then((res) => {
       commit(types.SET_GOODS, {goods: res.data.goods})
     }).catch((error) => {
       console.log(error)

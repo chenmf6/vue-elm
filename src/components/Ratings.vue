@@ -28,42 +28,30 @@
 
     <div class="divider"></div>
 
-    <div class="evaluation">
-      <div class="classify">
-        <span v-for="(item,index) in classifyArr" class="item" :class="{'active': item.active, 'bad': index==2, 'badActive':item.active&&index==2}" @click="filterEval(item)">
-          {{item.name}}
-          <span class="count">{{item.count}}</span>
-        </span>
-      </div>
-      <div class="switch" @click="toggleEvalFlag">
-        <span class="icon-check_circle" :class="{'on':evalflag}"></span>
-        <span class="text">只看有内容的评价</span>
-      </div>
-      <div class="eval-list">
-        <ul>
-          <li class="eval" v-for="eval in evalArr">
-            <div class="avatar">
-              <img :src="eval.avatar" width="28" height="28">
+    <evaluation :ratings="ratings" @refreshEval="refreshScroll">
+      <template slot="evalDetails" scope="props">
+        <li class="eval">
+          <div class="avatar">
+            <img :src="props.eval.avatar" width="28" height="28">
+          </div>
+          <div class="content">
+            <div class="user">
+              <span class="name">{{props.eval.username}}</span>
+              <span class="rateTime">{{props.eval.rateTime | time}}</span>
             </div>
-            <div class="content">
-              <div class="user">
-                <span class="name">{{eval.username}}</span>
-                <span class="rateTime">{{eval.rateTime | time}}</span>
-              </div>
-              <div class="star-wrapper">
-                <star :size="24" :score="eval.score"></star>
-                <span class="deliveryTime">{{eval.deliveryTime}}分钟送达</span>
-              </div>
-              <div class="text">{{eval.text}}</div>
-              <div class="recommend">
-                <span class="icon icon-thumb_up" v-show="eval.recommend.length"></span>
-                <span class="dish" v-for="dish in eval.recommend">{{dish}}</span>
-              </div>
+            <div class="star-wrapper">
+              <star :size="24" :score="props.eval.score"></star>
+              <span class="deliveryTime">{{props.eval.deliveryTime}}分钟送达</span>
             </div>
-          </li>
-        </ul>
-      </div>
-    </div>
+            <div class="text">{{props.eval.text}}</div>
+            <div class="recommend">
+              <span class="icon icon-thumb_up" v-show="props.eval.recommend.length"></span>
+              <span class="dish" v-for="dish in props.eval.recommend">{{dish}}</span>
+            </div>
+          </div>
+        </li>
+      </template>
+    </evaluation>
   </div>
 </div>
 </template>
@@ -73,46 +61,17 @@ import axios from 'axios'
 import BScroll from 'better-scroll'
 import {mapGetters} from 'vuex'
 import Star from './star/Star'
+import Evaluation from './Evaluation'
 
 export default {
-  components: {Star},
+  components: {Star, Evaluation},
   data () {
     return {
-      ratings: [],
-      classifyArr: [{
-        name: '全部',
-        count: 0,
-        active: true
-      }, {
-        name: '推荐',
-        count: 0,
-        active: false
-      }, {
-        name: '吐槽',
-        count: 0,
-        active: false
-      }],
-      evalflag: true
+      ratings: []
     }
   },
   computed: {
-    ...mapGetters(['seller']),
-    evalArr () {
-      let selectIndex = 0
-      this.classifyArr.forEach((data, index) => {
-        if (data.active) {
-          selectIndex = index
-        }
-      })
-      if (this.scroll) {
-        this.$nextTick(() => {
-          this.scroll.refresh()
-        })
-      }
-      return selectIndex
-        ? this.ratings.filter(data => this.evalflag ? data.rateType === selectIndex - 1 && data.text : data.rateType === selectIndex - 1)
-        : this.ratings.filter(data => this.evalflag ? data.text : true)
-    }
+    ...mapGetters(['seller'])
   },
   created () {
     this._init()
@@ -121,38 +80,26 @@ export default {
     _init () {
       axios.get('static/data.json').then(res => {
         this.ratings = res.data.ratings
-        this._initClassifyArr()
         this.$nextTick(() => {
           this._initScroller()
         })
       })
     },
-    _initClassifyArr () {
-      this.classifyArr.forEach((data, index) => {
-        if (index) {
-          data.count = this.ratings.filter(rating => rating.rateType === index - 1).length
-        } else {
-          data.count = this.ratings.length
-        }
-      })
-    },
     _initScroller () {
-      this.scroll = new BScroll(this.$refs.ratingsWrapper, {click: true})
+      this.ratingsScroll = new BScroll(this.$refs.ratingsWrapper, {click: true})
     },
-    toggleEvalFlag () {
-      this.evalflag = !this.evalflag
-    },
-    filterEval (classifyItem) {
-      this.classifyArr.forEach(data => {
-        data.active = false
-      })
-      classifyItem.active = true
+    refreshScroll () {
+      if (this.ratingsScroll) {
+        this.$nextTick(() => {
+          this.ratingsScroll.refresh()
+        })
+      }
     }
   }
 }
 </script>
 
-<style lang="stylus" scoped>
+<style lang="stylus">
   .ratingsWrapper
     position: absolute
     top: 174px
@@ -203,93 +150,57 @@ export default {
             font-size 12px
             color rgb(147,153,159)
             line-height 18px
-    .evaluation
-      padding 18px 0
-      position relative
-      .classify
-        padding-bottom 18px
-        margin 0 18px
-        border-bottom 1px solid rgba(7,17,27,0.1)
-        .item
-          display inline-block
-          font-size 12px
-          padding 8px 12px
-          line-height 16px
-          background rgba(0,160,220,0.2)
-          color rgb(77,85,95)
-          margin-right 8px
-          .count
-            font-size 8px
-            padding-left 2px
-          &.active
-            color white
-            background rgb(0,169,220)
-          &.bad
-            background rgba(77,85,93,0.2)
-          &.badActive
-            background #4d555d
-      .switch
-        font-size 12px
-        width 100%
-        padding 12px 0 12px 18px
-        color rgb(147,153,159)
-        border-bottom 1px solid rgba(7,17,27,0.1)
-        .icon-check_circle
-          font-size 24px
-          vertical-align middle
-          &.on
-            color #00c850
     .eval-list
-      .eval
-        display flex
-        padding 18px 0
-        margin 0 18px
-        border-bottom 1px solid rgba(7,17,27,0.1)
-        .avatar
-          flex 0 0 28px
-          margin-right 12px
-          img
-            border-radius 50%
-        .content
-          flex 1
-          .user
+    .eval
+      display flex
+      padding 18px 0
+      margin 0 18px
+      border-bottom 1px solid rgba(7,17,27,0.1)
+      .avatar
+        flex 0 0 28px
+        margin-right 12px
+        img
+          border-radius 50%
+      .content
+        flex 1
+        .user
+          font-size 10px
+          color rgb(7,17,27)
+          line-height 12px
+          .rateTime
+            position absolute
+            font-weight 200
+            right 18px
+            color rgb(147,153,159)
+        .star-wrapper
+          font-size 0
+          padding-top 4px
+          margin-bottom 6px
+          .star
+            display inline-block
+          .deliveryTime
             font-size 10px
-            color rgb(7,17,27)
-            line-height 12px
-            .rateTime
-              position absolute
-              font-weight 200
-              right 18px
-              color rgb(147,153,159)
-          .star-wrapper
-            font-size 0
-            padding-top 4px
-            margin-bottom 6px
-            .star
-              display inline-block
-            .deliveryTime
-              font-size 10px
-              padding-left 6px
-              font-weight 200
-              color rgb(147,153,159)
-          .text
+            padding-left 6px
+            font-weight 200
+            color rgb(147,153,159)
+        .text
+          font-size 12px
+          color rgb(7,17,27)
+          line-height 18px
+        .recommend
+          padding-top 4px
+          .icon
             font-size 12px
-            color rgb(7,17,27)
-            line-height 18px
-          .recommend
-            padding-top 4px
-            .icon
-              font-size 12px
-              color rgb(0,160,220)
-              line-height 16px
-            .dish
-              display inline-block
-              font-size 9px
-              color rgb(147,153,159)
-              line-height 16px
-              border 1px solid rgba(7,17,27,0.1)
-              padding 2px 6px
-              margin-right 8px
-              white-space normal
-              margin-top 4px
+            color rgb(0,160,220)
+            line-height 16px
+          .dish
+            display inline-block
+            font-size 9px
+            color rgb(147,153,159)
+            line-height 16px
+            border 1px solid rgba(7,17,27,0.1)
+            padding 2px 6px
+            margin-right 8px
+            white-space normal
+            margin-top 4px
 </style>

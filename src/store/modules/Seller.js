@@ -9,7 +9,9 @@ const state = {
 }
 
 const getters = {
-  seller: state => state.seller
+  seller: state => state.seller,
+  minPrice: state => state.seller.minPrice,
+  deliveryPrice: state => state.seller.deliveryPrice
 }
 
 const actions = {

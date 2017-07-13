@@ -93,7 +93,6 @@ export default {
   computed: mapGetters(['seller']),
   created () {
     this.$nextTick(() => {
-      console.log('created')
       this._initSellerScroll()
       this._initPicsScroll()
     })
@@ -101,7 +100,6 @@ export default {
   watch: {
     seller: function () {
       this.$nextTick(() => {
-        console.log('watch')
         this.sellerScroll ? this.sellerScroll.refresh() : this._initSellerScroll()
         this.picsScroll ? this.picsScroll.refresh() : this._initPicsScroll()
       })
@@ -110,15 +108,12 @@ export default {
   components: { Star, SupportIcon },
   methods: {
     _initSellerScroll () {
-      if (this.sellerScroll) {
-        return
-      }
       this.sellerScroll = new BScroll(this.$refs.sellerWrapper, {
         click: true
       })
     },
     _initPicsScroll () {
-      if (!this.seller.pics || this.picsScroll) {
+      if (!this.seller.pics) {
         return
       }
       const PIC_WIDTH = 120

@@ -1,70 +1,123 @@
 <template>
-<transition name="move">
-  <div class="detailWrapper" ref="detailWrapper" v-show="showDetail">
-    <div class="foodDetail">
-      <div class="back" @click="showToggle">
-        <i class="icon-arrow_lift"></i>
-      </div>
-      <img :src="food.image" height="425" width="100%">
-      <div class="info">
-        <div class="title">{{food.name}}</div>
+  <transition name="move">
+    <div class="detailsWrapper" ref="detailsWrapper" v-show="showDetails">
+      <div class="foodDetails">
+        <div class="back" @click="showToggle">
+          <i class="icon-arrow_lift"></i>
+        </div>
+        <img :src="food.image" height="425" width="100%">
+        <div class="info">
+          <div class="title">{{food.name}}</div>
+          <div class="desc">
+            <span>月售{{food.sellCount}}份</span>
+            <span>好评率{{food.rating}}%</span>
+          </div>
+          <div class="price">
+            <span class="unit">￥</span>{{food.price}}
+            <span class="oldPrice" v-show="food.oldPrice">￥{{food.oldPrice}}</span>
+          </div>
+          <div class="shopCart">
+            <transition name="fade">
+              <div class="text" @click="addToCart({food})" v-show="!isFoodInCart">加入购物车</div>
+            </transition>
+          </div>
+          <cart-control :food="food"></cart-control>
+        </div>
+
+        <div class="divider"></div>
+
         <div class="desc">
-          <span>月售{{food.sellCount}}份</span>
-          <span>好评率{{food.rating}}%</span>
+          <div class="title">商品介绍</div>
+          <div class="content">{{food.info}}</div>
         </div>
-        <div class="price">
-          <span class="unit">￥</span>{{food.price}}
-          <span class="oldPrice" v-show="food.oldPrice">￥{{food.oldPrice}}</span>
-        </div>
-        <div class="shopCart">
-          <transition name="fade">
-            <div class="text" @click="addCart" v-show="!food.count">加入购物车</div>
-          </transition>
-        </div>
-        <cart-control></cart-control>
-      </div>
 
-      <div class="divider"></div>
+        <div class="divider"></div>
 
-      <div class="desc">
-        <div class="title">商品介绍</div>
-        <div class="content">{{food.info}}</div>
+        <evaluation :ratings="food.ratings" @refreshEval="refreshScroll">
+          <template slot="evalName">
+            <div class="title">商品评价</div>
+          </template>
+
+          <template slot="evalDetails" scope="props">
+            <li class="eval">
+              <div class="userInfo">
+                <div class="time">{{props.eval.ratingTime | time}}</div>
+                <div class="user">
+                  <span>{{props.eval.username}}</span>
+                  <span class="avatar"><img :src="props.eval.avatar" width="12" height="12"> </span>
+                </div>
+              </div>
+
+              <div class="content">
+                <span class="icon" :class="props.eval.rateType?'icon-thumb_down':'icon-thumb_up'"></span>
+                <span class="text">{{props.eval.text}}</span>
+              </div>
+            </li>
+          </template>
+        </evaluation>
       </div>
     </div>
-
-    <div class="divider"></div>
-
-    <div class="evaluation">
-      <div class="title">商品评价</div>
-      <div class="classify">
-            <span v-for="(item,index) in classifyArr" class="item" :class="{'active':item.active,'bad':index==2,'badActive':item.active&&index==2}" @click="filterEval(item)">
-              {{item.name}}<span class="count">{{item.count}}</span>
-            </span>
-      </div>
-      <div class="switch" @click="toggleEvalFlag">
-        <span class="icon-check_circle" :class="{'on':evalflag}"></span>
-        <span class="text">只看有内容的评价</span>
-      </div>
-    </div>
-  </div>
-</transition>
+  </transition>
 </template>
 
 <script>
 import BScroll from 'better-scroll'
+import {mapGetters, mapMutations} from 'vuex'
 import CartControl from './CartControl'
+import Evaluation from './Evaluation'
 
 export default {
-  components: {CartControl},
+  components: {CartControl, Evaluation},
   props: {
     food: Object
   },
-
+  data () {
+    return {
+      showDetails: false
+    }
+  },
+  computed: {
+    ...mapGetters(['cartItems']),
+    isFoodInCart () {
+      return this.cartItems.some(item => {
+        return item.name === this.food.name
+      })
+    }
+  },
+  methods: {
+    ...mapMutations({
+      addToCart: 'ADD_TO_CART'
+    }),
+    showToggle () {
+      this.showDetails = !this.showDetails
+      if (this.showDetails) {
+        this.$nextTick(() => {
+          this._initScroll()
+        })
+      }
+    },
+    _initScroll () {
+      if (!this.detailsScroll) {
+        this.detailsScroll = new BScroll(this.$refs.detailsWrapper, {
+          click: true
+        })
+      } else {
+        this.detailsScroll.refresh()
+      }
+    },
+    refreshScroll () {
+      if (this.detailsScroll) {
+        this.$nextTick(() => {
+          this.detailsScroll.refresh()
+        })
+      }
+    }
+  }
 }
 </script>
 
-<style lang="stylus" scoped>
-  .detailWrapper
+<style lang="stylus">
+  .detailsWrapper
     position fixed
     left 0
     top 0
@@ -78,7 +131,7 @@ export default {
     &.move-enter,&.move-leave-active{
       transform translate3d(100%,0,0)
     }
-  .foodDetail
+  .foodDetails
     .back
       position absolute
       color white
@@ -143,7 +196,7 @@ export default {
           &.fade-enter,&.fade-leave-active{
             opacity 0
           }
-      .cartcontrol
+      .cart-control
         position absolute
         right 12px
         bottom 12px
@@ -161,49 +214,15 @@ export default {
         line-height 24px
         padding 0 8px
     .evaluation
-      padding 18px 0
-      position relative
       .title
         padding-left 18px
+        padding-bottom  18px
         font-size: 14px
         font-weight 500
         color: #07111b
-      .classify
-        padding 18px 0
+      .eval-list
         margin 0 18px
-        border-bottom 1px solid rgba(7,17,27,0.1)
-        .item
-          display inline-block
-          font-size 12px
-          padding 8px 12px
-          line-height 16px
-          background rgba(0,160,220,0.2)
-          color rgb(77,85,95)
-          margin-right 8px
-          .count
-            font-size 8px
-            padding-left 2px
-          &.active
-            color white
-            background rgb(0,169,220)
-          &.bad
-            background rgba(77,85,93,0.2)
-          &.badActive
-            background #4d555d
-      .switch
-        font-size 12px
-        width 100%
-        padding 12px 0 12px 18px
-        color rgb(147,153,159)
-        border-bottom 1px solid rgba(7,17,27,0.1)
-        .icon-check_circle
-          font-size 24px
-          vertical-align middle
-          &.on
-            color #00c850
-      .evel-list
-        margin 0 18px
-        .evel
+        .eval
           padding 16px 0
           border-bottom 1px solid rgba(7,17,27,0.1)
           .userInfo
@@ -234,5 +253,4 @@ export default {
               color rgb(7,17,27)
               line-height 16px
               padding-left 4px
-
 </style>
