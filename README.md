@@ -1,8 +1,13 @@
 # vue-elm
 
-> Vue 模仿饿了么
+## 项目简介
+> Vue 2.0 模仿饿了么
 
-## Build Setup
+>[在线演示](https://chenmf6.github.io/vue-elm/) (请选择Chrome开发者工具的设备模式)
+
+> [参考项目地址](https://github.com/SimonZhangITer/VueDemo_Sell_Eleme)
+
+## 本地运行步骤
 
 ``` bash
 # install dependencies
@@ -18,4 +23,9 @@ npm run build
 npm run build --report
 ```
 
-For detailed explanation on how things work, checkout the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
+## 我的其他项目
+* [Vue 2.0 模仿Evernote的本地笔记应用](https://github.com/chenmf6/vue-note)
+
+* [Vue 2.0 模仿微信聊天网页版](https://github.com/chenmf6/vue-chat)
+
+
