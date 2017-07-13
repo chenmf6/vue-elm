@@ -2,7 +2,7 @@
 <div class="goods">
   <div class="menu-wrapper" ref="menuWrapper">
     <ul>
-      <li v-for="(item,index) in goods" @click="menuClick(index,$event)" :class="index===menuCurrentIndex? 'menu-item-selected':'menu-item'">
+      <li v-for="(item,index) in goods" @click="menuClick(index)" :class="index===menuCurrentIndex? 'menu-item-selected':'menu-item'">
         <span class="text">
           <support-icon v-show="item.type>0" :supportType="item.type" :iconType="4"></support-icon>
           {{item.name}}
@@ -108,10 +108,7 @@ export default {
         this.listHeight.push(height)
       }
     },
-    menuClick (index, event) {
-      if (!event._constructed) {
-        return
-      }
+    menuClick (index) {
       this.foodsScroll.scrollTo(0, -this.listHeight[index], 300)
     },
     showFoodDetails (food) {
