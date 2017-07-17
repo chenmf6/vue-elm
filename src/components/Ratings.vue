@@ -15,7 +15,7 @@
           <span class="num">{{seller.serviceScore}}</span>
         </div>
         <div class="foodScore">
-          <span class="text">服务态度</span>
+          <span class="text">餐品口味</span>
           <star :size="36" :score="seller.foodScore"></star>
           <span class="num">{{seller.foodScore}}</span>
         </div>
@@ -111,7 +111,7 @@ export default {
     .info
       display flex
       .mark
-        flex 0 0 138px
+        flex 0 1 138px
         margin 18px 0
         border-right 1px solid rgba(7,17,27,0.1)
         text-align center
@@ -130,7 +130,8 @@ export default {
           line-height 10px
           margin-bottom 6px
       .stars
-        padding 18px 24px
+        padding 18px 10px
+        margin: 0 auto
         .serviceScore,.foodScore,.deliveryTime
           display flex
           margin-bottom 8px
