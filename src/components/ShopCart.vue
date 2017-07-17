@@ -115,7 +115,7 @@ export default {
     bottom 0
     width 100%
     height 48px
-    z-index 50
+    z-index 1
     .content
       display flex
       background #141d27

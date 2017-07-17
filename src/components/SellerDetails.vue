@@ -1,7 +1,8 @@
 <template>
 <transition name="fade">
-    <div v-if="detailsShow" class="details" ref="sellerDetailsWrapper">
-      <div class="details-content clearfix">
+  <div ref="sellerDetailsWrapper">
+    <div v-if="detailsShow" class="details">
+      <div class="details-content">
         <div class="details-main">
           <h1 class="name">{{seller.name}}</h1>
           <div class="star-wrapper">
@@ -32,6 +33,8 @@
         <i class="icon-close" @click="toggleShow"></i>
       </div>
     </div>
+  </div>
+
   </transition>
 </template>
 
@@ -56,6 +59,8 @@ export default {
         this.scroll = new BScroll(this.$refs.sellerDetailsWrapper, {
           click: true
         })
+      } else {
+        this.scroll.refresh()
       }
     },
     toggleShow () {
@@ -75,7 +80,7 @@ export default {
     position fixed
     top 0
     left 0
-    z-index 100
+    z-index 2
     width 100%
     height 100%
     background rgba(7,17,27,0.8)
@@ -84,6 +89,7 @@ export default {
       min-height 100%
       width 100%
       .details-main
+        display inline-block
         margin-top 64px
         padding-bottom 64px
         .name
@@ -135,15 +141,13 @@ export default {
           font-weight 200
           color rgb(255,255,255)
           line-height 24px
-
     .details-close
-      position relative
       width 32px
       height 32px
-      margin -64px auto 0 auto
-      clear both
+      margin -64px auto 0
       font-size 32px
       color rgba(255,255,255,0.5)
+
     &.fade-enter-active, &.fade-leave-active {
       transition: opacity .5s
     }
