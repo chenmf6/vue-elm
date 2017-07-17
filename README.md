@@ -24,8 +24,8 @@ npm run build --report
 ```
 
 ## 我的其他项目
-* [Vue 2.0 模仿Evernote的本地笔记应用](https://github.com/chenmf6/vue-note)
+* [Vue 2.0 模仿Evernote的本地笔记应用](https://github.com/chenmf6/vue2-note)
 
-* [Vue 2.0 模仿微信聊天网页版](https://github.com/chenmf6/vue-chat)
+* [Vue 2.0 模仿微信聊天网页版](https://github.com/chenmf6/vue2-chat)
 
 
