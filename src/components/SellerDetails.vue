@@ -1,47 +1,43 @@
 <template>
 <transition name="fade">
-  <div ref="sellerDetailsWrapper">
-    <div v-if="detailsShow" class="details">
-      <div class="details-content">
-        <div class="details-main">
-          <h1 class="name">{{seller.name}}</h1>
-          <div class="star-wrapper">
-            <star :size="48" :score="seller.score"></star>
-          </div>
-
-          <div class="title">
-            <div class="line"></div>
-            <div class="text">优惠信息</div>
-            <div class="line"></div>
-          </div>
-          <ul v-if="seller.supports" class="supports">
-            <li v-for="item in seller.supports" class="support-item">
-              <support-icon class="icon" :supportType="item.type" :iconType="2"></support-icon>
-              <span class="text">{{item.description}}</span>
-            </li>
-          </ul>
-
-          <div class="title">
-            <div class="line"></div>
-            <div class="text">商家公告</div>
-            <div class="line"></div>
-          </div>
-          <div class="bulletin">{{seller.bulletin}}</div>
+  <div v-if="detailsShow" class="details">
+    <div class="details-content">
+      <div class="details-main">
+        <h1 class="name">{{seller.name}}</h1>
+        <div class="star-wrapper">
+          <star :size="48" :score="seller.score"></star>
         </div>
+
+        <div class="title">
+          <div class="line"></div>
+          <div class="text">优惠信息</div>
+          <div class="line"></div>
+        </div>
+        <ul v-if="seller.supports" class="supports">
+          <li v-for="item in seller.supports" class="support-item">
+            <support-icon class="icon" :supportType="item.type" :iconType="2"></support-icon>
+            <span class="text">{{item.description}}</span>
+          </li>
+        </ul>
+
+        <div class="title">
+          <div class="line"></div>
+          <div class="text">商家公告</div>
+          <div class="line"></div>
+        </div>
+        <div class="bulletin">{{seller.bulletin}}</div>
       </div>
       <div class="details-close">
         <i class="icon-close" @click="toggleShow"></i>
       </div>
     </div>
   </div>
-
   </transition>
 </template>
 
 <script>
 import Star from './star/Star'
 import SupportIcon from './iconMap/SupportIcon.vue'
-import BScroll from 'better-scroll'
 
 export default {
   components: {Star, SupportIcon},
@@ -54,22 +50,8 @@ export default {
     }
   },
   methods: {
-    _initScroll: function () {
-      if (!this.scroll) {
-        this.scroll = new BScroll(this.$refs.sellerDetailsWrapper, {
-          click: true
-        })
-      } else {
-        this.scroll.refresh()
-      }
-    },
     toggleShow () {
       this.detailsShow = !this.detailsShow
-      if (this.detailsShow) {
-        this.$nextTick(() => {
-          this._initScroll()
-        })
-      }
     }
   }
 }
@@ -88,10 +70,12 @@ export default {
     .details-content
       min-height 100%
       width 100%
+      display flex
+      flex auto
+      flex-direction column
+      justify-content space-around
+      align-items center
       .details-main
-        display inline-block
-        margin-top 64px
-        padding-bottom 64px
         .name
           font-size 16px
           font-weight 700
@@ -141,12 +125,11 @@ export default {
           font-weight 200
           color rgb(255,255,255)
           line-height 24px
-    .details-close
-      width 32px
-      height 32px
-      margin -64px auto 0
-      font-size 32px
-      color rgba(255,255,255,0.5)
+      .details-close
+        width 32px
+        height 32px
+        font-size 32px
+        color rgba(255,255,255,0.5)
 
     &.fade-enter-active, &.fade-leave-active {
       transition: opacity .5s
