@@ -94,7 +94,7 @@ export default {
         click: true,
         probeType: 3
       })
-      this.foodsScroll.on('ratingsScroll', pos => {
+      this.foodsScroll.on('scroll', pos => {
         this.foodsScrollY = Math.abs(Math.round(pos.y))
       })
     },

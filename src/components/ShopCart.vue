@@ -53,8 +53,6 @@ export default {
   components: {CartControl},
   data () {
     return {
-      balls: [].fill({show: false}, 0, 5),
-      dropBalls: [],
       listShow: false
     }
   },
